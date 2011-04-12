@@ -1,0 +1,10 @@
+Website: http://kramerapps.com/cydia/
+Maintainer: Conrad Kramer <ckrames1234@gmail.com>
+Name: Shorten URL for ActionMenu
+Package: com.comconradkramer.actionmenutinyurl
+Section: App Addons
+Version: 1.1
+Depends: actionmenu
+Architecture: iphoneos-arm
+Description: Adds URL shortening to ActionMenu! Supports TinyURL, bit.ly, is.gd, xrl.us and tinyarro.ws
+Sponsor: Conrad Kramer <http://kramerapps.com/cydia/>
