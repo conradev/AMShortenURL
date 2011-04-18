@@ -4,8 +4,9 @@
 
 BUNDLE_NAME = ShortURL
 ShortURL_FILES = AMShortenURL.m AMShortenURLPrefs.m
-ShortURL_FILES += $(shell find Classes/ -iname '*.m') 
-ShortURL_CFLAGS = -I./Classes/
+ShortURL_FILES += $(shell find Classes/ -iname '*.m')
+ShortURL_FILES += $(shell find json-framework/Classes/ -iname '*.m') 
+ShortURL_CFLAGS = -I./Classes/ -I./json-framework/Classes/
 ShortURL_LDFLAGS = -licucore
 ShortURL_FRAMEWORKS = UIKit SystemConfiguration
 ShortURL_PRIVATE_FRAMEWORKS = Preferences

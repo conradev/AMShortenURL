@@ -27,7 +27,7 @@
 			<string>PSGroupCell</string>
 		</dict>
 		<dict>
-		<key>cell</key>
+			<key>cell</key>
 			<string>PSLinkListCell</string>
 			<key>default</key>
 			<string>0</string>
@@ -35,17 +35,18 @@
 			<string>com.conradkramer.amshorturl</string>
 			<key>detail</key>
 			<string>PSListItemsController</string>
-			<key>key</key>
-			<string>urlshortener</string>
 			<key>id</key>
 			<string>urlshortener</string>
-			<key>set</key>
-			<string>setURLShortener:specifier:</string>
+			<key>key</key>
+			<string>urlshortener</string>
 			<key>label</key>
 			<string>Shortening Service</string>
+			<key>set</key>
+			<string>setURLShortener:specifier:</string>
 			<key>validTitles</key>
 			<array>
 				<string>TinyURL</string>
+				<string>goo.gl</string>
 				<string>bit.ly</string>
 				<string>is.gd</string>
 				<string>xrl.us</string>
@@ -54,6 +55,7 @@
 			<key>validValues</key>
 			<array>
 				<string>0</string>
+				<string>5</string>
 				<string>1</string>
 				<string>2</string>
 				<string>3</string>
@@ -63,46 +65,46 @@
 		<dict>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
-			<key>key</key>
-			<string>username</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.conradkramer.amshorturl</string>
+			<key>detail</key>
+			<string>PSDetailController</string>
 			<key>id</key>
+			<string>username</string>
+			<key>key</key>
 			<string>username</string>
 			<key>label</key>
 			<string>Username</string>
 			<key>placeholder</key>
 			<string></string>
-			<key>detail</key>
-			<string>PSDetailController</string>
-			<key>default</key>
-			<string></string>
-			<key>defaults</key>
-			<string>com.conradkramer.amshorturl</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSEditTextCell</string>
-			<key>key</key>
-			<string>apikey</string>
+			<key>default</key>
+			<string></string>
+			<key>defaults</key>
+			<string>com.conradkramer.amshorturl</string>
+			<key>detail</key>
+			<string>PSDetailController</string>
 			<key>id</key>
+			<string>apikey</string>
+			<key>key</key>
 			<string>apikey</string>
 			<key>label</key>
 			<string>API Key</string>
 			<key>placeholder</key>
 			<string></string>
-			<key>detail</key>
-			<string>PSDetailController</string>
-			<key>default</key>
-			<string></string>
-			<key>defaults</key>
-			<string>com.conradkramer.amshorturl</string>
 		</dict>
 		<dict>
+			<key>action</key>
+			<string>showBitlyInfo:</string>
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>id</key>
 			<string>infobutton</string>
-			<key>action</key>
-			<string>showBitlyInfo:</string>
 			<key>label</key>
 			<string>How do I get these?</string>
 		</dict>
