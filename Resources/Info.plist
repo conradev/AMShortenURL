@@ -23,6 +23,6 @@
 	<key>MinimumOSVersion</key>
 	<string>3.0</string>
 	<key>NSPrincipalClass</key>
-	<string>AMShortURLListController</string>
+	<string>AMShortenURLPrefsController</string>
 </dict>
 </plist>
