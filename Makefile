@@ -2,8 +2,10 @@
 #  ActionMenu Shorten URL
 ##
 
+GO_EASY_ON_ME=1
+
 BUNDLE_NAME = ShortURL
-ShortURL_FILES = AMShortenURL.m AMShortenURLPrefs.m
+ShortURL_FILES = $(shell find Classes/ -iname '*.m')
 ShortURL_LDFLAGS = -licucore
 ShortURL_FRAMEWORKS = UIKit SystemConfiguration
 ShortURL_PRIVATE_FRAMEWORKS = Preferences
@@ -22,8 +24,6 @@ ShortURL_LDFLAGS += -F./External/ -framework GData
 
 include theos/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/bundle.mk
-
-########## Custom Build Rules ##########
 
 # Auto-download GData framework
 ifeq ($(shell [ -d "$(FW_PROJECT_DIR)/External/GData.framework" ] && echo 1 || echo 0),0)

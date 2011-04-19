@@ -1,66 +1,16 @@
 //
-//  ActionMenuTinyURL.m
-//  ActionMenuTinyURL
+//  AMShortenURLController.m
+//  AMShortenURL
 //
-//  Created by Conrad on 8/27/10.
-//  Copyright Conrad Kramer 2010. All rights reserved.
-//
+//  Created by Conrad Kramer on 8/27/10.
 //
 //
+//
 
-#import <UIKit/UIKit.h>
-
-#import "ActionMenu.h"
-#import "JSON.h"
-#import "GTMNSString+HTML.h"
-#import "Reachability.h"
-#import "RegexKitLite.h"
-
-typedef enum ShortURLService {
-	AMTinyURL = 0,
-	AMBitly = 1,
-	AMIsgd = 2,
-	AMxrlus = 3,
-	AMTinyarrows = 4,
-    AMGoogl = 5
-} ShortURLService;
-
-@protocol AMShortenerDelegate <NSObject>
-
-- (void)shortenedLongURL:(NSString *)longURL intoShortURL:(NSString *)shortURL;	
-
-@end
+#import "AMShortenURLController.h"
 
 @interface UIScreen (iOS4Additions)
 - (CGFloat)scale;
-@end
-
-@interface AMShortenURLController : NSObject {
-	NSURLConnection *shortenerConnection;
-	NSMutableData 	*urlData;
-	NSString        *longURL;
-	
-    ShortURLService service;
-	NSString *apikey;
-	NSString *username;
-    
-	BOOL 			 internetIsAvailable;
-	
-	id<AMShortenerDelegate> delegate;
-	
-	Reachability    *reachability;
-}
-
-+ (id) sharedInstance;
-
-- (NSURLRequest *)requestForLongURL:(NSString *)longurl;
-- (NSString *)errorForResponse:(NSString *)response;
-- (BOOL)IsInternetAvailable;
-- (BOOL)isSimpleRequest;
-- (void)shortenURL:(NSString *)longURL;
-
-@property (nonatomic, assign) id<AMShortenerDelegate> delegate;
-
 @end
 
 static AMShortenURLController *sharedInstance;
@@ -254,64 +204,6 @@ static AMShortenURLController *sharedInstance;
     if (longURL) {
         [longURL release];
     }
-}
-
-@end
-
-@implementation UIResponder (ActionMenuTinyURLAction)
-
-- (void)shortenedLongURL:(NSString *)longURL intoShortURL:(NSString *)shortURL {
-	
-	if ([self respondsToSelector:@selector(paste:)]) {
-		NSMutableString *string = [NSMutableString stringWithString:[self selectedTextualRepresentation]];
-		if (string && [string length] > 0) {
-			[string replaceOccurrencesOfString:longURL withString:shortURL options:NSCaseInsensitiveSearch range:NSMakeRange(0, [string length])];
-			[[UIPasteboard generalPasteboard] setString:string];
-			if ([[self selectedTextualRepresentation] isEqualToString:[self textualRepresentation]]) {
-				[self selectAll:self];	
-			}
-			[self paste:self];
-		}
-	}
-	
-	[[UIPasteboard generalPasteboard] setString:shortURL];
-}
-- (void)doActionMenuShortenURL:(id)sender {
-	NSArray *urls = [[self selectedTextualRepresentation] componentsMatchedByRegex:@"\\bhttps?://[a-zA-Z0-9\\-.]+(?:(?:/[a-zA-Z0-9\\-._?,'+\\&amp;%$=~*!():@\\\\]*)+)?"];
-	if ([urls count] < 1) {
-		return;
-	}
-	NSString *longURL = [urls objectAtIndex:0];
-	
-	[[AMShortenURLController sharedInstance] setDelegate:self];
-	[[AMShortenURLController sharedInstance] shortenURL:longURL];
-}
-
-- (BOOL)canDoActionMenuShortenURL:(id)sender {
-	CMLog(@"Getting text");
-	NSString *selectedText = [self selectedTextualRepresentation];
-	if ([[AMShortenURLController sharedInstance] IsInternetAvailable] && [selectedText length] > 0) {
-		CMLog(@"Got text, checking match");
-		CMLog(@"%@", selectedText);
-		BOOL isMatched = NO;
-		isMatched = [selectedText isMatchedByRegex:@"\\bhttps?://[a-zA-Z0-9\\-.]+(?:(?:/[a-zA-Z0-9\\-._?,'+\\&amp;%$=~*!():@\\\\]*)+)?"];
-		CMLog(@"Checked match, returning value");
-		return isMatched;
-	}
-	return NO;
-}
-
-+ (void)load {
-	NSObject<AMMenuItem> *menuitem = [[UIMenuController sharedMenuController] registerAction:@selector(doActionMenuShortenURL:) title:@"Shorten URL" canPerform:@selector(canDoActionMenuShortenURL:)];
-	
-	UIScreen *screen = [UIScreen mainScreen];
-	if ([screen respondsToSelector:@selector(scale)] && [screen scale] >= 2.0 && [[NSFileManager defaultManager] fileExistsAtPath:@"/Library/ActionMenu/Plugins/Shorten URL@2x.png"]) {
-		menuitem.image = [UIImage imageWithContentsOfFile:@"/Library/ActionMenu/Plugins/Shorten URL@2x.png"];
-	} else {
-		menuitem.image = [UIImage imageWithContentsOfFile:@"/Library/ActionMenu/Plugins/Shorten URL.png"];
-	}
-	
-	[AMShortenURLController createSharedInstanceIfNecessary];
 }
 
 @end

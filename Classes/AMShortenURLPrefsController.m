@@ -1,10 +1,15 @@
-#import <Preferences/PSListController.h>
+//
+//  AMShortenURLPrefsController.m
+//  AMShortenURL
+//
+//  Created by Conrad Kramer on 8/27/10.
+//
+//
+//
 
-@interface AMShortURLListController: PSListController {
-	NSArray *specs;
-}
-@end
-@implementation AMShortURLListController
+#import "AMShortenURLPrefsController.h"
+
+@implementation AMShortenURLPrefsController
 
 -(void)setURLShortener:(id)value specifier:(PSSpecifier *)spec {
 	[self setPreferenceValue:value specifier:spec];
@@ -51,9 +56,6 @@
 	
 	NSMutableArray *mutSpecs = [_specifiers mutableCopy];
 	
-	/*
-	 *  Array scanning done manually. Its a BITCH.
-	 */
 	int prefValue = 0;
 	for (PSSpecifier *spec in mutSpecs) {
 		if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"urlshortener"]) {
@@ -97,9 +99,6 @@
 			[mutSpecs removeObjectAtIndex:4];
 		}
 	}
-	/*
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 */	
 	
 	_specifiers = [mutSpecs copy];
 	[mutSpecs release];
