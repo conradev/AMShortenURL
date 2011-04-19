@@ -51,11 +51,28 @@ static void setRootController(id self, SEL sel, id controller) { }
 		}
 	}
     if ([value intValue] == 5) {
-        if (![self specifierForID:@"authbutton"]) {
-			[self insertSpecifier:[specs objectAtIndex:7] afterSpecifierID:@"urlshortener" animated:NO];
-		}
-    } else if ([self specifierForID:@"authbutton"]) {
-        [self removeSpecifierID:@"authbutton" animated:NO];
+        if ([[GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
+            if ([self specifierForID:@"authbuttonin"]) {
+                [self removeSpecifierID:@"authbuttonin" animated:NO];
+            }
+            if (![self specifierForID:@"authbuttonout"]) {
+                [self insertSpecifier:[specs objectAtIndex:8] afterSpecifierID:@"urlshortener" animated:NO];
+            }
+        } else {
+            if ([self specifierForID:@"authbuttonout"]) {
+                [self removeSpecifierID:@"authbuttonout" animated:NO];
+            }
+            if (![self specifierForID:@"authbuttonin"]) {
+                [self insertSpecifier:[specs objectAtIndex:7] afterSpecifierID:@"urlshortener" animated:NO];
+            }
+        }
+    } else {
+        if ([self specifierForID:@"authbuttonin"]) {
+            [self removeSpecifierID:@"authbuttonin" animated:NO];
+        }
+        if ([self specifierForID:@"authbuttonout"]) {
+            [self removeSpecifierID:@"authbuttonout" animated:NO];
+        }
     }
 }
 - (void)showBitlyInfo:(id)something {
@@ -68,23 +85,37 @@ static void setRootController(id self, SEL sel, id controller) { }
         [GDataOAuthViewControllerTouch removeParamsFromKeychainForName:APP_SERVICE_NAME];
         [GDataOAuthViewControllerTouch revokeTokenForGoogleAuthentication:auth];
         
-        // SET SIGN IN
+        if ([self specifierForID:@"authbuttonout"]) {
+            [self removeSpecifierID:@"authbuttonout" animated:NO];
+        }
+        if (![self specifierForID:@"authbuttonin"]) {
+            [self insertSpecifier:[specs objectAtIndex:7] afterSpecifierID:@"urlshortener" animated:NO];
+        }
     } else {
         NSString *scope = @"https://www.googleapis.com/auth/urlshortener";
-        
-
         GDataOAuthViewControllerTouch *viewController = [[[GDataOAuthViewControllerTouch alloc] initWithScope:scope language:nil appServiceName:APP_SERVICE_NAME delegate:self finishedSelector:@selector(viewController:finishedWithAuth:error:)] autorelease];
         viewController.navigationItem.title = @"Google Account";
         
-        [[self navigationController] pushViewController:viewController animated:YES];
+        [[self navigationController] pushViewController:viewController animated:YES];        
     }
 }
 - (void)viewController:(GDataOAuthViewControllerTouch *)viewController finishedWithAuth:(GDataOAuthAuthentication *)auth error:(NSError *)error {
     [[self navigationController] popToViewController:self animated:YES];
     if ([auth canAuthorize]) {
-        // SET SIGN OUT
+        if ([self specifierForID:@"authbuttonin"]) {
+            [self removeSpecifierID:@"authbuttonin" animated:NO];
+        }
+        if (![self specifierForID:@"authbuttonout"]) {
+            [self insertSpecifier:[specs objectAtIndex:8] afterSpecifierID:@"urlshortener" animated:NO];
+        }
+    } else {
+        if ([self specifierForID:@"authbuttonout"]) {
+            [self removeSpecifierID:@"authbuttonout" animated:NO];
+        }
+        if (![self specifierForID:@"authbuttonin"]) {
+            [self insertSpecifier:[specs objectAtIndex:7] afterSpecifierID:@"urlshortener" animated:NO];
+        }
     }
-    
 }
 - (id)specifiers {
 	if(_specifiers == nil) {
@@ -93,13 +124,6 @@ static void setRootController(id self, SEL sel, id controller) { }
 	}
 	
 	NSMutableArray *mutSpecs = [_specifiers mutableCopy];
-	
-    GDataOAuthAuthentication *auth = [GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
-    if ([auth canAuthorize]) {
-        // SET SIGN OUT
-    } else {
-        // SET SIGN IN
-    }
     
 	int prefValue = 0;
 	for (PSSpecifier *spec in mutSpecs) {
@@ -108,7 +132,8 @@ static void setRootController(id self, SEL sel, id controller) { }
 		}
 	}
 	
-    BOOL authButtonExists = NO;
+    BOOL authButtonInExists = NO;
+    BOOL authButtonOutExists = NO;
 	BOOL usernameExists = NO;
 	BOOL infoExists = NO;
 	BOOL apikeyExists = NO;
@@ -122,28 +147,42 @@ static void setRootController(id self, SEL sel, id controller) { }
 		if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"apikey"]) {
 			apikeyExists = YES;
 		}
-        if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"authbutton"]) {
-			authButtonExists = YES;
+        if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"authbuttonin"]) {
+			authButtonInExists = YES;
+		}
+        if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"authbuttonout"]) {
+			authButtonOutExists = YES;
 		}
 	}
+    
 	if (prefValue == 5) {
-        if (!authButtonExists) {
-            [mutSpecs insertObject:[specs objectAtIndex:7] atIndex:7];
+        if ([[GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
+            if (authButtonInExists) {
+                [mutSpecs removeObjectAtIndex:7];
+            }
+        } else {
+            if (authButtonOutExists) {
+                [mutSpecs removeObjectAtIndex:8];
+            }
         }
     } else {
-        if (authButtonExists) {
+        if (authButtonOutExists) {
+            [mutSpecs removeObjectAtIndex:8];
+        }
+        if (authButtonInExists) {
             [mutSpecs removeObjectAtIndex:7];
         }
     }
+                 
 	if (prefValue == 1) {
 		if (!usernameExists) {
 			[mutSpecs insertObject:[specs objectAtIndex:4] atIndex:4];
 		}
+        if (!apikeyExists) {
+			[mutSpecs insertObject:[specs objectAtIndex:5] atIndex:5];
+		}
 		if (!infoExists) {
 			[mutSpecs insertObject:[specs objectAtIndex:6] atIndex:6];
-		}
-		if (!apikeyExists) {
-			[mutSpecs insertObject:[specs objectAtIndex:5] atIndex:5];
 		}
 	} else {
 		if (infoExists) {

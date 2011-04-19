@@ -114,9 +114,19 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>id</key>
-			<string>authbutton</string>
+			<string>authbuttonin</string>
 			<key>label</key>
 			<string>Sign In</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>authButtonPressed:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>id</key>
+			<string>authbuttonout</string>
+			<key>label</key>
+			<string>Sign Out</string>
 		</dict>
 		<dict>
 			<key>cell</key>
