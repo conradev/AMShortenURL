@@ -155,7 +155,7 @@ static AMShortenURLController *sharedInstance;
 - (void)shortenURL:(NSString *)aLongURL {
 	longURL = [[aLongURL copy] retain];
 	if (!urlData) {
-		urlData = [[[NSMutableData alloc] init] retain];
+		urlData = [[[[NSMutableData alloc] init] retain] retain];
 	}
     
 	shortenerConnection = [NSURLConnection connectionWithRequest:[self requestForLongURL:longURL] delegate:self];
