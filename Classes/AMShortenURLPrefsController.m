@@ -94,7 +94,7 @@ static void setRootController(id self, SEL sel, id controller) { }
     } else {
         NSString *scope = @"https://www.googleapis.com/auth/urlshortener";
         GDataOAuthViewControllerTouch *viewController = [[[GDataOAuthViewControllerTouch alloc] initWithScope:scope language:nil appServiceName:APP_SERVICE_NAME delegate:self finishedSelector:@selector(viewController:finishedWithAuth:error:)] autorelease];
-        viewController.navigationItem.title = @"Google Account";
+        viewController.navigationItem.title = @"Sign In";
         
         [[self navigationController] pushViewController:viewController animated:YES];        
     }
