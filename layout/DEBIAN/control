@@ -3,7 +3,7 @@ Maintainer: Conrad Kramer <ckrames1234+support@gmail.com>
 Name: Shorten URL for ActionMenu
 Package: com.comconradkramer.actionmenutinyurl
 Section: App Addons
-Version: 1.1.1
+Version: 1.1.2
 Depends: actionmenu, gdata-objectivec-client
 Architecture: iphoneos-arm
 Description: Adds URL shortening to ActionMenu! Supports TinyURL, bit.ly, is.gd, goo.gl, xrl.us and tinyarro.ws
