@@ -9,10 +9,12 @@
 
 #import <Preferences/PSListController.h>
 
+#define APP_SERVICE_NAME @"AMShortenURL"
+
 @interface AMShortenURLPrefsController : PSListController {
 
 	NSArray *specs;
-
+    BOOL hasGoogleCredentials;
 }
 
 @end

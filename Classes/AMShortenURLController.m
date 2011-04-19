@@ -9,6 +9,8 @@
 
 #import "AMShortenURLController.h"
 
+#import <GData/GDataOAuthViewControllerTouch.h>
+
 @interface UIScreen (iOS4Additions)
 - (CGFloat)scale;
 @end
@@ -109,6 +111,11 @@ static AMShortenURLController *sharedInstance;
             NSDictionary *requestDict = [NSDictionary dictionaryWithObject:longurl forKey:@"longUrl"];
             [request setHTTPBody:[[requestDict JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding]];
             [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+            
+            GDataOAuthAuthentication *auth = [GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
+            if ([auth canAuthorize]) {
+                [auth authorizeRequest:request];
+            }
         }
     }
     

@@ -108,6 +108,22 @@
 			<key>label</key>
 			<string>How do I get these?</string>
 		</dict>
+		<dict>
+			<key>action</key>
+			<string>authButtonPressed:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>id</key>
+			<string>authbutton</string>
+			<key>label</key>
+			<string>Sign In</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Copyright © 2010 Conrad Kramer</string>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>Shorten URL</string>

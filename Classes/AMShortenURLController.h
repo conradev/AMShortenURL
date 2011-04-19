@@ -14,6 +14,8 @@
 #import "Reachability.h"
 #import "RegexKitLite.h"
 
+#import "AMShortenURLPrefsController.h"
+
 typedef enum ShortURLService {
 	AMTinyURL = 0,
 	AMBitly = 1,

@@ -9,7 +9,21 @@
 
 #import "AMShortenURLPrefsController.h"
 
+#import <GData/GDataOAuthViewControllerTouch.h>
+
+#include <objc/runtime.h>
+#include <objc/message.h>
+
 @implementation AMShortenURLPrefsController
+
+// Hacky patches on existing framework
+static void nonexistantImplementation(id self, SEL sel) { }
+static void setRootController(id self, SEL sel, id controller) { }
++ (void)load {
+    Method popView = class_getInstanceMethod(objc_getClass("GDataOAuthViewControllerTouch"), @selector(popView));
+    method_setImplementation(popView, (IMP)&nonexistantImplementation);
+    class_addMethod(objc_getClass("GDataOAuthViewControllerTouch"), @selector(setRootController:), (IMP)&setRootController, "v@:@");
+}
 
 -(void)setURLShortener:(id)value specifier:(PSSpecifier *)spec {
 	[self setPreferenceValue:value specifier:spec];
@@ -36,16 +50,41 @@
 			[self removeSpecifierID:@"infobutton" animated:NO];
 		}
 	}
+    if ([value intValue] == 5) {
+        if (![self specifierForID:@"authbutton"]) {
+			[self insertSpecifier:[specs objectAtIndex:7] afterSpecifierID:@"urlshortener" animated:NO];
+		}
+    } else if ([self specifierForID:@"authbutton"]) {
+        [self removeSpecifierID:@"authbutton" animated:NO];
+    }
 }
 - (void)showBitlyInfo:(id)something {
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://bit.ly/a/your_api_key"]];
 }
-- (id)tableView:(id)view titleForFooterInSection:(int)section {
-	if (section == ([self numberOfSectionsInTableView:view] - 1)) {
-		return @"\n\nCopyright © 2010 Conrad Kramer";
-	} else {
-	return [super tableView:view titleForFooterInSection:section];
-	}
+- (void)authButtonPressed:(id)something {
+	GDataOAuthAuthentication *auth = [GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
+    
+    if ([auth canAuthorize]) {
+        [GDataOAuthViewControllerTouch removeParamsFromKeychainForName:APP_SERVICE_NAME];
+        [GDataOAuthViewControllerTouch revokeTokenForGoogleAuthentication:auth];
+        
+        // SET SIGN IN
+    } else {
+        NSString *scope = @"https://www.googleapis.com/auth/urlshortener";
+        
+
+        GDataOAuthViewControllerTouch *viewController = [[[GDataOAuthViewControllerTouch alloc] initWithScope:scope language:nil appServiceName:APP_SERVICE_NAME delegate:self finishedSelector:@selector(viewController:finishedWithAuth:error:)] autorelease];
+        viewController.navigationItem.title = @"Google Account";
+        
+        [[self navigationController] pushViewController:viewController animated:YES];
+    }
+}
+- (void)viewController:(GDataOAuthViewControllerTouch *)viewController finishedWithAuth:(GDataOAuthAuthentication *)auth error:(NSError *)error {
+    [[self navigationController] popToViewController:self animated:YES];
+    if ([auth canAuthorize]) {
+        // SET SIGN OUT
+    }
+    
 }
 - (id)specifiers {
 	if(_specifiers == nil) {
@@ -53,9 +92,15 @@
 		specs = [[_specifiers retain] retain];
 	}
 	
-	
 	NSMutableArray *mutSpecs = [_specifiers mutableCopy];
 	
+    GDataOAuthAuthentication *auth = [GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
+    if ([auth canAuthorize]) {
+        // SET SIGN OUT
+    } else {
+        // SET SIGN IN
+    }
+    
 	int prefValue = 0;
 	for (PSSpecifier *spec in mutSpecs) {
 		if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"urlshortener"]) {
@@ -63,6 +108,7 @@
 		}
 	}
 	
+    BOOL authButtonExists = NO;
 	BOOL usernameExists = NO;
 	BOOL infoExists = NO;
 	BOOL apikeyExists = NO;
@@ -76,8 +122,19 @@
 		if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"apikey"]) {
 			apikeyExists = YES;
 		}
+        if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"authbutton"]) {
+			authButtonExists = YES;
+		}
 	}
-	
+	if (prefValue == 5) {
+        if (!authButtonExists) {
+            [mutSpecs insertObject:[specs objectAtIndex:7] atIndex:7];
+        }
+    } else {
+        if (authButtonExists) {
+            [mutSpecs removeObjectAtIndex:7];
+        }
+    }
 	if (prefValue == 1) {
 		if (!usernameExists) {
 			[mutSpecs insertObject:[specs objectAtIndex:4] atIndex:4];
