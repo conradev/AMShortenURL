@@ -27,5 +27,5 @@ else
     curl -s -L "${GDATA_REPO}/${pkg_path}" > $pkg
 fi
 ar -p $pkg data.tar.gz | tar --wildcards -zxf - ./System/Library/Frameworks/*
-mv ./System/Library/Frameworks/* .
-rm -rf usr Packages.bz2 $pkg
+mv ./System/Library/Frameworks/* ./External/
+rm -rf System Packages.bz2 $pkg
