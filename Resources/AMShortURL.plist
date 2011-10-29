@@ -39,6 +39,8 @@
 			<string>urlshortener</string>
 			<key>key</key>
 			<string>urlshortener</string>
+            <key>PostNotification</key>
+            <string>com.comconradkramer.actionmenutinyurl.settings</string>
 			<key>label</key>
 			<string>Shortening Service</string>
 			<key>set</key>
@@ -69,16 +71,14 @@
 			<string></string>
 			<key>defaults</key>
 			<string>com.conradkramer.amshorturl</string>
-			<key>detail</key>
-			<string>PSDetailController</string>
 			<key>id</key>
 			<string>username</string>
 			<key>key</key>
 			<string>username</string>
-			<key>label</key>
+		    <key>PostNotification</key>
+            <string>com.comconradkramer.actionmenutinyurl.settings</string>
+            <key>label</key>
 			<string>Username</string>
-			<key>placeholder</key>
-			<string></string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -87,16 +87,14 @@
 			<string></string>
 			<key>defaults</key>
 			<string>com.conradkramer.amshorturl</string>
-			<key>detail</key>
-			<string>PSDetailController</string>
 			<key>id</key>
 			<string>apikey</string>
 			<key>key</key>
 			<string>apikey</string>
-			<key>label</key>
+            <key>PostNotification</key>
+            <string>com.comconradkramer.actionmenutinyurl.settings</string>
+            <key>label</key>
 			<string>API Key</string>
-			<key>placeholder</key>
-			<string></string>
 		</dict>
 		<dict>
 			<key>action</key>
@@ -131,8 +129,20 @@
 		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
+		</dict>
+        <dict>
+			<key>action</key>
+			<string>showDonationPage:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Donate with PayPal</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
 			<key>footerText</key>
-			<string>Copyright © 2010 Conrad Kramer</string>
+			<string>© 2010-2011 Conrad Kramer</string>
 		</dict>
 	</array>
 	<key>title</key>

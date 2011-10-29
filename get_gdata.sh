@@ -7,7 +7,7 @@
 WGET=$(type -P wget)
 CURL=$(type -P curl)
 if [ -z "$WGET" -a -z "$CURL" ]; then
-    echo "ERROR: This script requires either 'wget' or 'curl' to be installed."
+    echo "ERROR: get_gdata.sh requires either 'wget' or 'curl' to be installed."
     exit 1
 fi
 
@@ -26,6 +26,9 @@ else
     pkg=$(basename $pkg_path)
     curl -s -L "${GDATA_REPO}/${pkg_path}" > $pkg
 fi
-ar -p $pkg data.tar.gz | tar --wildcards -zxf - ./System/Library/Frameworks/*
-mv ./System/Library/Frameworks/* ./External/
+ar -p $pkg data.tar.gz | tar -xvf - &> /dev/null
+if [ -e ./External/GData.framework ]; then
+    rm -r ./External/GData.framework
+fi
+mv ./System/Library/Frameworks/GData.framework ./External/
 rm -rf System Packages.bz2 $pkg

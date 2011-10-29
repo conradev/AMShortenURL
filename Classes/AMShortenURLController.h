@@ -27,33 +27,38 @@ typedef enum ShortURLService {
 
 @protocol AMShortenerDelegate <NSObject>
 
-- (void)shortenedLongURL:(NSString *)longURL intoShortURL:(NSString *)shortURL;	
+- (void)shortenedLongURL:(NSString *)longURL intoShortURL:(NSString *)shortURL;
 
 @end
 
 @interface AMShortenURLController : NSObject {
 	NSURLConnection *shortenerConnection;
-	NSMutableData 	*urlData;
-	NSString        *longURL;
-	
+	NSMutableData 	*_connectionData;
+	NSString        *_longURL;
+
     ShortURLService service;
 	NSString *apikey;
 	NSString *username;
-    
-	BOOL 			 internetIsAvailable;
-	
+
+	BOOL internetIsAvailable;
+    BOOL isLoadingRequest;
+
 	id<AMShortenerDelegate> delegate;
-	
+
 	Reachability    *reachability;
 }
 
+@property (nonatomic, retain) NSString *longURL;
+@property (nonatomic, retain) NSMutableData *connectionData;
+
 + (id) sharedInstance;
-+ (void)createSharedInstanceIfNecessary;
 
 - (NSURLRequest *)requestForLongURL:(NSString *)longurl;
 - (NSString *)errorForResponse:(NSString *)response;
-- (BOOL)IsInternetAvailable;
+- (BOOL)isInternetAvailable;
+- (BOOL)isLoadingRequest;
 - (BOOL)isSimpleRequest;
+- (void)reloadSettings;
 - (void)shortenURL:(NSString *)longURL;
 
 @property (nonatomic, assign) id<AMShortenerDelegate> delegate;

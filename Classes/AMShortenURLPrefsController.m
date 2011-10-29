@@ -14,15 +14,24 @@
 #include <objc/runtime.h>
 #include <objc/message.h>
 
+static Class $GDataOAuthViewControllerTouch;
+
 @implementation AMShortenURLPrefsController
 
 // Hacky patches on existing framework
 static void nonexistantImplementation(id self, SEL sel) { }
 static void setRootController(id self, SEL sel, id controller) { }
+
 + (void)load {
-    Method popView = class_getInstanceMethod(objc_getClass("GDataOAuthViewControllerTouch"), @selector(popView));
+    if (![[NSBundle bundleWithPath:@"/System/Library/Frameworks/GData.framework"] load]) {
+        abort();
+    }
+
+    $GDataOAuthViewControllerTouch = objc_getClass("GDataOAuthViewControllerTouch");
+
+    Method popView = class_getInstanceMethod($GDataOAuthViewControllerTouch, @selector(popView));
     method_setImplementation(popView, (IMP)&nonexistantImplementation);
-    class_addMethod(objc_getClass("GDataOAuthViewControllerTouch"), @selector(setRootController:), (IMP)&setRootController, "v@:@");
+    class_addMethod($GDataOAuthViewControllerTouch, @selector(setRootController:), (IMP)&setRootController, "v@:@");
 }
 
 -(void)setURLShortener:(id)value specifier:(PSSpecifier *)spec {
@@ -51,7 +60,7 @@ static void setRootController(id self, SEL sel, id controller) { }
 		}
 	}
     if ([value intValue] == 5) {
-        if ([[GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
+        if ([[$GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
             if ([self specifierForID:@"authbuttonin"]) {
                 [self removeSpecifierID:@"authbuttonin" animated:NO];
             }
@@ -75,16 +84,22 @@ static void setRootController(id self, SEL sel, id controller) { }
         }
     }
 }
-- (void)showBitlyInfo:(id)something {
+
+- (void)showDonationPage:(PSSpecifier *)spec {
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8GMYVX3582Y7E"]];
+}
+
+- (void)showBitlyInfo:(PSSpecifier *)spec {
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://bit.ly/a/your_api_key"]];
 }
-- (void)authButtonPressed:(id)something {
-	GDataOAuthAuthentication *auth = [GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
-    
+
+- (void)authButtonPressed:(PSSpecifier *)spec {
+	GDataOAuthAuthentication *auth = [$GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME];
+
     if ([auth canAuthorize]) {
-        [GDataOAuthViewControllerTouch removeParamsFromKeychainForName:APP_SERVICE_NAME];
-        [GDataOAuthViewControllerTouch revokeTokenForGoogleAuthentication:auth];
-        
+        [$GDataOAuthViewControllerTouch removeParamsFromKeychainForName:APP_SERVICE_NAME];
+        [$GDataOAuthViewControllerTouch revokeTokenForGoogleAuthentication:auth];
+
         if ([self specifierForID:@"authbuttonout"]) {
             [self removeSpecifierID:@"authbuttonout" animated:NO];
         }
@@ -93,10 +108,10 @@ static void setRootController(id self, SEL sel, id controller) { }
         }
     } else {
         NSString *scope = @"https://www.googleapis.com/auth/urlshortener";
-        GDataOAuthViewControllerTouch *viewController = [[[GDataOAuthViewControllerTouch alloc] initWithScope:scope language:nil appServiceName:APP_SERVICE_NAME delegate:self finishedSelector:@selector(viewController:finishedWithAuth:error:)] autorelease];
+        GDataOAuthViewControllerTouch *viewController = [[[$GDataOAuthViewControllerTouch alloc] initWithScope:scope language:nil appServiceName:APP_SERVICE_NAME delegate:self finishedSelector:@selector(viewController:finishedWithAuth:error:)] autorelease];
         viewController.navigationItem.title = @"Sign In";
-        
-        [[self navigationController] pushViewController:viewController animated:YES];        
+
+        [[self navigationController] pushViewController:viewController animated:YES];
     }
 }
 - (void)viewController:(GDataOAuthViewControllerTouch *)viewController finishedWithAuth:(GDataOAuthAuthentication *)auth error:(NSError *)error {
@@ -122,16 +137,16 @@ static void setRootController(id self, SEL sel, id controller) { }
 		_specifiers = [[self loadSpecifiersFromPlistName:@"AMShortURL" target:self] retain];
 		specs = [[_specifiers retain] retain];
 	}
-	
+
 	NSMutableArray *mutSpecs = [_specifiers mutableCopy];
-    
+
 	int prefValue = 0;
 	for (PSSpecifier *spec in mutSpecs) {
 		if ([[[spec properties] objectForKey:@"id"] isEqualToString:@"urlshortener"]) {
 			prefValue = [(NSString *)[self readPreferenceValue:spec] intValue];
 		}
 	}
-	
+
     BOOL authButtonInExists = NO;
     BOOL authButtonOutExists = NO;
 	BOOL usernameExists = NO;
@@ -154,9 +169,9 @@ static void setRootController(id self, SEL sel, id controller) { }
 			authButtonOutExists = YES;
 		}
 	}
-    
+
 	if (prefValue == 5) {
-        if ([[GDataOAuthViewControllerTouch authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
+        if ([[objc_getClass("GDataOAuthViewControllerTouch") authForGoogleFromKeychainForName:APP_SERVICE_NAME] canAuthorize]) {
             if (authButtonInExists) {
                 [mutSpecs removeObjectAtIndex:7];
             }
@@ -173,7 +188,7 @@ static void setRootController(id self, SEL sel, id controller) { }
             [mutSpecs removeObjectAtIndex:7];
         }
     }
-                 
+
 	if (prefValue == 1) {
 		if (!usernameExists) {
 			[mutSpecs insertObject:[specs objectAtIndex:4] atIndex:4];
@@ -195,10 +210,10 @@ static void setRootController(id self, SEL sel, id controller) { }
 			[mutSpecs removeObjectAtIndex:4];
 		}
 	}
-	
+
 	_specifiers = [mutSpecs copy];
 	[mutSpecs release];
-	
+
 	return _specifiers;
 }
 @end
