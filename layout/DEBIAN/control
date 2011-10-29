@@ -1,10 +1,12 @@
-Website: http://kramerapps.com/cydia/
-Maintainer: Conrad Kramer <ckrames1234+support@gmail.com>
+Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=actionmenutinyurlData
+Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=actionmenutinyurlData
+Author: Conrad Kramer <support@kramerapps.com>
+Maintainer: BigBoss <bigboss@thebigboss.org>
 Name: Shorten URL for ActionMenu
 Package: com.comconradkramer.actionmenutinyurl
 Section: App Addons
-Version: 1.1.2
+Version: 1.2.0
 Depends: actionmenu, gdata-objectivec-client
 Architecture: iphoneos-arm
 Description: Adds URL shortening to ActionMenu! Supports TinyURL, bit.ly, is.gd, goo.gl, xrl.us and tinyarro.ws
-Sponsor: Conrad Kramer <http://kramerapps.com/cydia/>
+dev: conradkramer
