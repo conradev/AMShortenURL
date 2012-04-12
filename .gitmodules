@@ -1,6 +1,6 @@
 [submodule "theos"]
 	path = theos
-	url = https://github.com/DHowett/theos.git
+	url = git://github.com/rpetrich/theos.git
 [submodule "External/json-framework"]
 	path = External/json-framework
 	url = https://github.com/stig/json-framework.git
